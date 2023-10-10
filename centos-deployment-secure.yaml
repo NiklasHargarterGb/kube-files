@@ -18,9 +18,6 @@ spec:
     spec:
       securityContext:
         runAsNonRoot: true
-        allowPrivilegeEscalation: false
-        capabilities:
-          drop: ["all"]
         seccompProfile:
           type: "RuntimeDefault"
       containers:
@@ -28,3 +25,7 @@ spec:
           image: centos:latest
           command: ["/bin/sh"]
           args: ["-c", "while true; do echo hello; sleep 10;done"]
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop: ["all"]
