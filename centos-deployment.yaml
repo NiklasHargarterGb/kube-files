@@ -1,13 +1,15 @@
-apiversion: apps/v1
-kind: deployment
+apiVersion: apps/v1
+kind: Deployment
 metadata:
-  name: centos
+  name: centos-deployment
+  labels:
+    app: target
 spec:
+  replicas: 2
   selector:
     matchLabels:
       app: target
       image: centos
-  replicas: 2
   template:
     metadata:
       labels:
