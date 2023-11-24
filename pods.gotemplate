@@ -1,0 +1,56 @@
+'{{- range .items -}}
+    {{.metadata.name}}{{"\n"}}
+{{- end -}}'
+
+'{{- range $index, $element := .items -}}
+    {{- range $container, $status := $element.spec.containers -}}
+        {{- printf "%s,%s,%s,%s,%s,%s,%s\n" $element.metadata.namespace  $element.metadata.name  $status.name (or $status.resources.requests.cpu "" ) (or $status.resources.requests.memory "") (or $status.resources.limits.memory "") (or $status.resources.limits.cpu "") -}}
+    {{- end -}}
+{{- end -}}'
+
+'{{- range $index, $element := .items -}}
+    {{- range $container, $status := $element.spec.containers -}}
+        {{- println $element.metadata.namespace  $element.metadata.name  $status.name  -}}
+    {{- end -}}
+{{- end -}}'
+
+
+kubectl get pods -A -o go-template='{{- range $index, $element := .items -}}
+    {{- range $spec_index, $spec_container := $element.spec.containers -}}
+        {{- range $status_index, $status_container := $element.status.containerStatuses -}}
+            {{- if and (eq $spec_index $status_index) ($status_container.state.running) -}}
+                {{- println $element.metadata.namespace $element.metadata.name $spec_container.name  -}}
+            {{- end -}}
+        {{- end -}}
+    {{- end -}}
+{{- end -}}'
+
+
+
+
+haben leider nested quotes!!!
+
+kubectl get pods -A -o go-template='{{- range $index, $element := .items -}}
+    {{- if eq $element.status.phase "Running" -}}
+        {{- range $spec_index, $spec_container := $element.spec.containers -}}
+            {{- range $status_index, $status_container := $element.status.containerStatuses -}}
+                {{- if and (eq $spec_index $status_index) ($status_container.state.running) -}}
+                    {{- println $element.metadata.namespace $element.metadata.name $spec_container.name  -}}
+                {{- end -}}
+            {{- end -}}
+        {{- end -}}
+    {{- end -}}
+{{- end -}}'
+
+
+kubectl get pods -A -o go-template='{{- range $index, $element := .items -}}
+    {{- if eq $element.status.phase "Running" -}}
+        {{- range $spec_index, $spec_container := $element.spec.containers -}}
+            {{- range $status_index, $status_container := $element.status.containerStatuses -}}
+                {{- if and (eq $spec_index $status_index) ($status_container.state.running) -}}
+                    {{- printf "%s<->%s<->%s\n" $element.metadata.namespace $element.metadata.name $spec_container.name  -}}
+                {{- end -}}
+            {{- end -}}
+        {{- end -}}
+    {{- end -}}
+{{- end -}}'
